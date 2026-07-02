@@ -45,10 +45,7 @@ if len(parquet_blobs) == 0:
         "year": [],
         "is_weekend": [],
         "is_holiday": [],
-        "speed_ratio": [],
-        "current_congestion": [],
         "predicted_congestion": [],
-        "future_congestion_15min": [],
         "confidence": [],
         "error": [f"Không tìm thấy parquet trong prefix: {GOLD_PREFIX}"]
     })
@@ -79,10 +76,7 @@ else:
         "year",
         "is_weekend",
         "is_holiday",
-        "speed_ratio",
-        "current_congestion",
         "predicted_congestion",
-        "future_congestion_15min",
         "confidence"
     ]
 
@@ -120,7 +114,11 @@ else:
     df_gold["hour"] = df_gold["hour"].fillna(base_time.dt.hour)
 
     df_gold["day_of_week"] = pd.to_numeric(df_gold["day_of_week"], errors="coerce")
-    df_gold["day_of_week"] = df_gold["day_of_week"].fillna(base_time.dt.dayofweek + 1)
+    # Map giống Job B: Python weekday() Monday=0..Sunday=6 → Spark dayofweek() Sunday=1..Saturday=7
+    _dow_map = {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 1}
+    df_gold["day_of_week"] = df_gold["day_of_week"].fillna(
+        base_time.dt.dayofweek.map(_dow_map)
+    )
 
     df_gold["month"] = pd.to_numeric(df_gold["month"], errors="coerce")
     df_gold["month"] = df_gold["month"].fillna(base_time.dt.month)
@@ -134,32 +132,9 @@ else:
         errors="coerce"
     )
 
-    # Nếu future_congestion_15min chưa có thì dùng predicted_congestion làm alias
-    df_gold["future_congestion_15min"] = pd.to_numeric(
-        df_gold["future_congestion_15min"],
-        errors="coerce"
-    )
-
-    df_gold["future_congestion_15min"] = df_gold["future_congestion_15min"].fillna(
-        df_gold["predicted_congestion"]
-    )
-
     # Confidence
     df_gold["confidence"] = pd.to_numeric(
         df_gold["confidence"],
-        errors="coerce"
-    )
-
-    # Các cột cũ từ training_features.
-    # Bảng predictions không có dữ liệu thật cho speed_ratio/current_congestion,
-    # nên để null để Power BI không lỗi.
-    df_gold["speed_ratio"] = pd.to_numeric(
-        df_gold["speed_ratio"],
-        errors="coerce"
-    )
-
-    df_gold["current_congestion"] = pd.to_numeric(
-        df_gold["current_congestion"],
         errors="coerce"
     )
 
@@ -170,7 +145,7 @@ else:
     )
 
     df_gold["is_weekend"] = df_gold["is_weekend"].fillna(
-        df_gold["day_of_week"].isin([6, 7]).astype("int")
+        df_gold["day_of_week"].isin([1, 7]).astype("int")
     )
 
     df_gold["is_holiday"] = pd.to_numeric(
@@ -189,13 +164,14 @@ else:
         "is_weekend",
         "is_holiday",
         "predicted_congestion",
-        "future_congestion_15min"
     ]
 
     for col in int_cols:
         df_gold[col] = df_gold[col].astype("Int64")
 
-    # Sắp xếp cột cho dễ nhìn
+    df_gold = df_gold.sort_values("timestamp", ascending=False).reset_index(drop=True)
+    df_gold["is_latest"] = ~df_gold.duplicated(subset=["link_id"], keep="first")
+
     ordered_cols = [
         "link_id",
         "borough",
@@ -209,11 +185,9 @@ else:
         "year",
         "is_weekend",
         "is_holiday",
-        "speed_ratio",
-        "current_congestion",
         "predicted_congestion",
-        "future_congestion_15min",
-        "confidence"
+        "confidence",
+        "is_latest"
     ]
 
     df_gold = df_gold[ordered_cols]

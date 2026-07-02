@@ -12,7 +12,7 @@ container_client = blob_service.get_container_client(CONTAINER_NAME)
 
 matched_blobs = []
 
-for blob in container_client.list_blobs():
+for blob in container_client.list_blobs(name_starts_with="artifacts/"):
     name = blob.name
 
     if "link_coordinates" in name and name.endswith(".parquet"):
@@ -37,5 +37,9 @@ else:
     # Ép kiểu link_id cho dễ join trong Power BI
     if "link_id" in df_coords.columns:
         df_coords["link_id"] = df_coords["link_id"].astype(str)
+    if "lat" in df_coords.columns:
+        df_coords["lat"] = pd.to_numeric(df_coords["lat"], errors="coerce")
+    if "lon" in df_coords.columns:
+        df_coords["lon"] = pd.to_numeric(df_coords["lon"], errors="coerce")
 
 df_coords
