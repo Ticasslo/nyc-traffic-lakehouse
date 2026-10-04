@@ -4,6 +4,8 @@ Predicts the traffic congestion level 15 minutes ahead for 116 road segments in 
 
 This is a course project for Big Data Processing at HCM-UTE (team of 3, 2026). Historical data comes from NYC Open Data and live data from the NYC DOT real-time traffic speed feed. The full report is in Vietnamese: [Nhom01_BaoCao_Final.pdf](Nhom01_BaoCao_Final.pdf).
 
+Trained model on Hugging Face: [nyc-traffic-congestion-rf](https://huggingface.co/TicassloThang/nyc-traffic-congestion-rf).
+
 ![Power BI dashboard: map of the NYC road segments colored by current congestion level (orange heavy, dark blue moderate, light blue free flow; labels in Vietnamese)](assets/dashboard-map.png)
 
 ## Overview
@@ -91,7 +93,7 @@ The thresholds follow the level of service boundaries in the Highway Capacity Ma
 
 ![Predictions from Job B shown in Power BI on 2026-07-02: road segment, borough, free-flow speed, predicted class, target time and confidence](assets/realtime-predictions.png)
 
-The model was trained on Databricks (Spark 4.1) but Job B runs Spark 4.0, which could not load the saved Random Forest because the tree metadata file had unnamed columns. `notebooks/fix_model_load.ipynb` renames the columns with PyArrow, tests the fix on a copy of the model, then applies it to the original.
+An earlier version of the model was saved from a Databricks runtime with Spark 4.1, and Job B (Spark 4.0) could not load it because the tree metadata file had unnamed columns. `notebooks/fix_model_load.ipynb` renames the columns with PyArrow, tests the fix on a copy of the model, then applies it to the original. The final model was saved from a Spark 4.0 runtime and is on [Hugging Face](https://huggingface.co/TicassloThang/nyc-traffic-congestion-rf).
 
 ## Results
 
