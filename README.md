@@ -2,7 +2,7 @@
 
 Predicts the traffic congestion level 15 minutes ahead for 116 road segments in New York City, using a streaming pipeline and a lakehouse built on Kafka, Spark and Delta Lake.
 
-This is a course project for Big Data Processing at HCM-UTE (team of 3, 2026). Historical data comes from NYC Open Data and live data from the NYC DOT real-time traffic speed feed.
+This is a course project for Big Data Processing at HCM-UTE (team of 3, 2026). Historical data comes from NYC Open Data and live data from the NYC DOT real-time traffic speed feed. The full report is in Vietnamese: [Nhom01_BaoCao_Final.pdf](Nhom01_BaoCao_Final.pdf).
 
 ![Power BI dashboard: map of the NYC road segments colored by current congestion level (orange heavy, dark blue moderate, light blue free flow; labels in Vietnamese)](assets/dashboard-map.png)
 
@@ -59,6 +59,8 @@ flowchart LR
 | [Real-time traffic speed feed](https://linkdata.nyctmc.org/data/LinkSpeedQuery.txt) (NYC DOT) | Prediction | TSV file, refreshed every 1 to 2 minutes |
 
 Both sources come from the same sensors and use the same `link_id` for each road segment. We only kept the 125 segments that were still active in the live feed, and 9 of them had no valid speed at all, so 116 segments are used for training and prediction.
+
+A copy of the data we collected is on [Google Drive](https://drive.google.com/drive/folders/16yXYw4kNDw1v950dqq1R548BGgVQr_9z?usp=sharing): the full historical Bronze data as CSV, a one-month sample, and the files we stored on Azure Blob Storage.
 
 ## How it works
 
@@ -183,11 +185,11 @@ Job B needs about 60 minutes of data in Kafka before the first predictions appea
 
 ## Team
 
-- Huỳnh Ngọc Thắng: data pipeline (notebooks 01 to 04 and 06), Docker setup, Kafka jobs A and B
-- Huỳnh Thanh Nhân: model training on Databricks
-- Trương Tấn Sang: Power BI dashboard
+- Huỳnh Ngọc Thắng: Docker Compose setup (Kafka, Spark cluster), Azure Blob Storage layout, data ingestion and the Bronze to Silver pipeline (notebooks 01 to 03)
+- Huỳnh Thanh Nhân: Silver to Gold features, model training and evaluation (notebooks 04 and 05)
+- Trương Tấn Sang: Job A, Kafka, Job B and the Power BI dashboard
 
-We also reviewed and helped with each other's parts.
+We also helped each other across parts.
 
 ## License
 
