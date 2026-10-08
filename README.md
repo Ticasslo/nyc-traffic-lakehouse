@@ -187,7 +187,7 @@ Job B needs about 60 minutes of data in Kafka before the first predictions appea
 
 ## Team
 
-- Huỳnh Ngọc Thắng: Docker Compose setup (Kafka, Spark cluster), Azure Blob Storage layout, data ingestion and the Bronze to Silver pipeline (notebooks 01 to 03)
+- Huỳnh Ngọc Thắng (team lead): Docker Compose setup (Kafka, Spark cluster), Azure Blob Storage layout, data ingestion and the Bronze to Silver pipeline (notebooks 01 to 03)
 - Huỳnh Thanh Nhân: Silver to Gold features, model training and evaluation (notebooks 04 and 05)
 - Trương Tấn Sang: Job A, Kafka, Job B and the Power BI dashboard
 
